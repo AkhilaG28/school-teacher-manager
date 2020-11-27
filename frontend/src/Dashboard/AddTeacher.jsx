@@ -15,6 +15,7 @@ function AddTeacher() {
   const history = useHistory();
   const { userData } = useSelector((state) => state.Auth);
   const [teacherDetails, setTeacherDetails] = useState(initialState);
+  const { addedTeacher } = useSelector((state) => state.Teachers);
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -46,12 +47,13 @@ function AddTeacher() {
     }
     teacherRecord.append("classes", JSON.stringify(classes));
     teacherRecord.append("adminId", userData.userId);
-    console.log(classes);
     dispatch(addTeacherRecord(teacherRecord));
   };
 
+  // if (addedTeacher) history.push("/dashboard");
+
   return (
-    <div>
+    <div className="my-5">
       <h2 className="text-center mt-5">Add a Teacher Record</h2>
       <form encType="multipart/form-data" className="offset-3 col-6">
         <div className="my-4">

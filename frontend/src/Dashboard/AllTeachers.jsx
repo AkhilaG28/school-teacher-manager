@@ -8,10 +8,14 @@ import styled from "styled-components";
 const Card = styled.div`
   border-radius: 15px;
   padding: 1% 2%;
+  background: #f4f7fc;
+  &:hover {
+    background: #d1d7e3;
+  }
 `;
 
 const Div = styled.div`
-  color: #fc427b;
+  color: #ef786c;
   font-size: 40px;
 `;
 
@@ -20,7 +24,7 @@ const Image = styled.img`
   width: 80px;
   border-radius: 40px;
   padding: 3px;
-  border: 2px solid #fc427b;
+  border: 2px solid #ef786c;
 `;
 
 export default function AllTeachers() {
@@ -118,7 +122,7 @@ export default function AllTeachers() {
   return (
     <div>
       {/* search bar */}
-      <div className="row col-4 mt-2 offset-4">
+      <div className="row col-4 mt-5 offset-4">
         <div className="input-group mb-3">
           <input
             type="text"
@@ -144,8 +148,8 @@ export default function AllTeachers() {
       </div>
 
       {/* Sort and Filter */}
-      <div className="row">
-        <div className="col">
+      <div className="row mb-5">
+        <div className="col-6 offset-1">
           <div className="form-check form-check-inline ml-4">
             <input
               className="form-check-input"
@@ -188,9 +192,34 @@ export default function AllTeachers() {
               Other
             </label>
           </div>
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              checked={filterGender == "all" ? true : false}
+              type="radio"
+              name="gender"
+              onChange={setGender}
+              id="all"
+              value="all"
+            />
+            <label className="form-check-label" htmlFor="all">
+              All
+            </label>
+          </div>
         </div>
-        <div className="col">
-          <select name="gender" onChange={setSort} value={filterGender}>
+        <div className="col-2 offset-2">
+          <select
+            name="gender"
+            style={{
+              borderRadius: 10,
+              background: "#ef786c",
+              border: 0,
+              padding: 5,
+              color: "white",
+            }}
+            onChange={setSort}
+            value={filterGender}
+          >
             <option value="sort">Sort By Age</option>
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
@@ -215,7 +244,7 @@ export default function AllTeachers() {
       {teachers &&
         teachers.map((item) => (
           <Div key={item._id}>
-            <Card className="card col-10 offset-1 mb-2">
+            <Card className="card col-10 offset-1 mb-5">
               <div className="row no-gutters">
                 <div className="col-md-2">
                   <Image

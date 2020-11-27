@@ -65,7 +65,6 @@ function TeacherDetails() {
       ...urlParams,
       id: userData.userId,
     };
-    // console.log(payload);
     dispatch(deleteTeacher(params.id, payload));
   };
 
@@ -73,6 +72,9 @@ function TeacherDetails() {
 
   return (
     <>
+      <Link to="/dashboard">
+        <button className="btn btn-info mt-4 ml-4">Go Back</button>
+      </Link>
       <Card className="card col-8 offset-2 mb-3">
         <div className="card-body">
           <div className="row text-center">
