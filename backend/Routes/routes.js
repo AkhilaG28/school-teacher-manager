@@ -13,7 +13,7 @@ const {
   loginUser,
   getTeachersRecords,
   postTeacherRecord,
-  //   updateTeacherRecord,
+  findTeacherRecord,
   deleteTeacherRecord,
 } = require("../Controllers/controllers");
 
@@ -56,9 +56,9 @@ router.get("/getTeachers/:id", getTeachersRecords);
 
 router.post("/addTeacher", upload.single("avatar"), postTeacherRecord);
 
-// router.put("/api/teacher/update/:id", updateTeacherRecord);
+router.get("/findTeacher/:id", findTeacherRecord);
 
-router.delete("/teacher/delete/:id", deleteTeacherRecord);
+router.delete("/deleteTeacher/:id", deleteTeacherRecord);
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];

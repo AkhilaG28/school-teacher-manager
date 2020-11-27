@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useHistory, Link } from "react-router-dom";
 import styled from "styled-components";
-import { deletePatientRecord } from "../PatientRecords/actions";
+import { findTeacher, deleteTeacher } from "../TeacherRedux/actions";
 
 const Card = styled.div`
   border-radius: 15px;
@@ -41,58 +41,68 @@ const Button = styled.button`
   margin-top: 2%;
 `;
 
-function PatientDetails() {
-  const { patients, deleted } = useSelector((state) => state.Patient);
+function TeacherDetails() {
   let params = useParams();
   const history = useHistory();
-
-  let patient = patients.find((item) => item._id == params.id);
-  let prescription = JSON.parse(patient.prescription);
-
   const dispatch = useDispatch();
 
-  const deletePatient = () => {
-    dispatch(deletePatientRecord(params.id));
-    history.push("/dashboard");
+  let teacherId = params.id;
+
+  useEffect(() => {
+    dispatch(findTeacher(teacherId));
+  }, []);
+
+  const { teacher, urlParams, deleted } = useSelector(
+    (state) => state.Teachers
+  );
+
+  const { userData } = useSelector((state) => state.Auth);
+
+  let classes = JSON.parse(teacher.data.classes);
+
+  const deleteTeacherRecord = () => {
+    let payload = {
+      ...urlParams,
+      id: userData.userId,
+    };
+    // console.log(payload);
+    dispatch(deleteTeacher(params.id, payload));
   };
 
   if (deleted) history.push("/dashboard");
+
   return (
     <>
-      <Link
-        to="/dashboard/allPatients"
-        style={{ textDecoration: "none", color: "black", margin: "2%" }}
-      >
-        Go Back
-      </Link>
       <Card className="card col-8 offset-2 mb-3">
         <div className="card-body">
           <div className="row text-center">
-            <h2 className="card-title col">Name: {patient.name}</h2>
-            <h5 className="card-text col mt-2">Age: {patient.age}</h5>
+            <h2 className="card-title col">Name: {teacher.data.name}</h2>
+            <h5 className="card-text col mt-2">Age: {teacher.data.age}</h5>
           </div>
           <div className="row text-center">
-            <h5 className="card-text text-center col">Prescription:</h5>
+            <h5 className="card-text text-center col">Classes:</h5>
           </div>
 
           <Table>
             <thead>
               <tr className="p-4" style={{ background: "#22a6b3" }}>
-                <td>Medicine</td>
-                <td>Qty</td>
+                <td>Grade</td>
+                <td>Section</td>
+                <td>Subject</td>
               </tr>
             </thead>
             <tbody>
-              {prescription.map((tabs, index) => (
+              {classes.map((grade, index) => (
                 <tr key={index} className="p-4">
-                  <td>{tabs.medicineName}</td>
-                  <td>{tabs.quantity}</td>
+                  <td>{grade.grade}</td>
+                  <td>{grade.section}</td>
+                  <td>{grade.subject}</td>
                 </tr>
               ))}
             </tbody>
           </Table>
           <div className="row text-center">
-            <Button className="col-4 offset-4" onClick={deletePatient}>
+            <Button className="col-4 offset-4" onClick={deleteTeacherRecord}>
               Delete
             </Button>
           </div>
@@ -102,4 +112,4 @@ function PatientDetails() {
   );
 }
 
-export default PatientDetails;
+export default TeacherDetails;

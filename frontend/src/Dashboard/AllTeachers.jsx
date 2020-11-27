@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
-import { changeQueries } from "../PatientRecords/actions";
-import { getTeachersRecords } from "../TeacherRedux/actions";
+import { getTeachersRecords, changeQueries } from "../TeacherRedux/actions";
 import styled from "styled-components";
 
 const Card = styled.div`
@@ -28,46 +27,93 @@ export default function AllTeachers() {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const [teacherName, setTeacherName] = useState("all");
+  let { teachers, urlParams, totalCount } = useSelector(
+    (state) => state.Teachers
+  );
+  const { userData } = useSelector((state) => state.Auth);
+
+  let totalPages = Math.ceil(totalCount / 5);
+
+  const [teacherName, setTeacherName] = useState(urlParams.name);
+  const [filterGender, setFilterGender] = useState(urlParams.filter);
+  const [sortOrder, setSortOrder] = useState(urlParams.sortOrder);
+  const [activePage, setActivePage] = useState(urlParams.page);
 
   const handleChange = (e) => {
     setTeacherName(e.target.value);
   };
 
-  let { teachers, urlParams } = useSelector((state) => state.Teachers);
-  const { userData } = useSelector((state) => state.Auth);
+  useEffect(() => {
+    let payload = {
+      id: userData.userId,
+      name: teacherName,
+      sortOrder: sortOrder,
+      page: activePage,
+      filter: filterGender,
+    };
+    dispatch(getTeachersRecords(payload));
+    history.push(
+      `/dashboard/${userData.userId}?page=${activePage}limit=5&name=${teacherName}&filter=${filterGender}&sort=${sortOrder}`
+    );
+  }, []);
+
+  const searchTeacher = () => {
+    console.log("object");
+    setActivePage(1);
+    let payload = {
+      id: userData.userId,
+      name: teacherName,
+      sortOrder: sortOrder,
+      page: 1,
+      filter: filterGender,
+    };
+    dispatch(changeQueries(payload));
+    dispatch(getTeachersRecords(payload));
+    history.push(
+      `/dashboard/${
+        userData.userId
+      }?page=${1}limit=5&name=${teacherName}&filter=${filterGender}&sort=${sortOrder}`
+    );
+  };
+
+  const handlePageChange = (e, value) => {
+    setActivePage(value);
+  };
 
   useEffect(() => {
     let payload = {
       id: userData.userId,
       name: teacherName,
-      sortOrder: urlParams[0].sortOrder,
-      page: urlParams[0].page,
-      filter: urlParams[0].filter,
-    };
-    dispatch(getTeachersRecords(payload));
-  }, []);
-
-  const searchTeacher = () => {
-    let payload = {
-      id: userData.userId,
-      name: teacherName,
-      sortOrder: urlParams[0].sortOrder,
-      page: urlParams[0].page,
-      filter: urlParams[0].filter,
+      sortOrder: sortOrder,
+      page: activePage,
+      filter: filterGender,
     };
     dispatch(changeQueries(payload));
+    dispatch(getTeachersRecords(payload));
+
+    history.push(
+      `/dashboard/${userData.userId}?page=${activePage}&limit=5&name=${teacherName}&filter=${filterGender}&sort=${sortOrder}`
+    );
+  }, [sortOrder, activePage, filterGender]);
+
+  const setSort = (e) => {
+    setSortOrder(e.target.value);
   };
 
-  teachers = teachers.map((item) => {
-    if (!item.avatar.includes("http")) {
-      item.avatar = item.avatar.split("/");
-      item.avatar = `http://localhost:8000/uploads/${
-        item.avatar[item.avatar.length - 1]
-      }`;
-      return item;
-    }
-  });
+  const setGender = (e) => {
+    setFilterGender(e.target.value);
+  };
+  teachers =
+    teachers &&
+    teachers.map((item) => {
+      if (!item.avatar.includes("http")) {
+        item.avatar = item.avatar.split("/");
+        item.avatar = `http://localhost:8000/uploads/${
+          item.avatar[item.avatar.length - 1]
+        }`;
+        return item;
+      } else return item;
+    });
 
   return (
     <div>
@@ -77,6 +123,7 @@ export default function AllTeachers() {
           <input
             type="text"
             className="form-control"
+            onChange={handleChange}
             placeholder="Search Teacher"
             aria-label="Username"
             aria-describedby="basic-addon1"
@@ -85,7 +132,6 @@ export default function AllTeachers() {
             <span
               className="input-group-text"
               id="basic-addon1"
-              onChange={handleChange}
               style={{
                 background: "transparent",
                 border: "1px 0 1px 1px",
@@ -96,6 +142,74 @@ export default function AllTeachers() {
           </div>
         </div>
       </div>
+
+      {/* Sort and Filter */}
+      <div className="row">
+        <div className="col">
+          <div className="form-check form-check-inline ml-4">
+            <input
+              className="form-check-input"
+              checked={filterGender == "Male" ? true : false}
+              type="radio"
+              name="gender"
+              onChange={setGender}
+              id="male"
+              value="Male"
+            />
+            <label className="form-check-label" htmlFor="male">
+              Male
+            </label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              checked={filterGender == "Female" ? true : false}
+              type="radio"
+              name="gender"
+              onChange={setGender}
+              id="female"
+              value="Female"
+            />
+            <label className="form-check-label" htmlFor="female">
+              Female
+            </label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              checked={filterGender == "Other" ? true : false}
+              type="radio"
+              name="gender"
+              onChange={setGender}
+              id="other"
+              value="Other"
+            />
+            <label className="form-check-label" htmlFor="other">
+              Other
+            </label>
+          </div>
+        </div>
+        <div className="col">
+          <select name="gender" onChange={setSort} value={filterGender}>
+            <option value="sort">Sort By Age</option>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Pagination */}
+      <Pagination
+        count={totalPages}
+        onChange={handlePageChange}
+        style={{
+          clear: "both",
+          marginLeft: "40%",
+          outline: "none",
+          marginBottom: "3%",
+        }}
+        color="secondary"
+      />
 
       {/* Map Teachers Data */}
       {teachers &&
@@ -137,7 +251,7 @@ export default function AllTeachers() {
                 </div>
                 <div className="col-md-1">
                   <Link
-                    to={`/patientDetails/${item._id}`}
+                    to={`/teacherDetails/${item._id}`}
                     style={{ textDecoration: "none" }}
                   >
                     <div className="mt-2 text-dark">...</div>

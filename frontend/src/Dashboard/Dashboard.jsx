@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import AllTeachers from "./AllTeachers";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
   const { userData } = useSelector((state) => state.Auth);

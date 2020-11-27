@@ -6,6 +6,7 @@ import Login from "./LandingPage/Login";
 import LandingPage from "./LandingPage/LandingPage";
 import Dashboard from "./Dashboard/Dashboard";
 import AddTeacher from "./Dashboard/AddTeacher";
+import TeacherDetails from "./Dashboard/TeacherDetails";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/addTeacher" component={AddTeacher} />
-      {/* <Route path="/patientDetails/:id" component={PatientDetails} /> */}
+      <Route path="/teacherDetails/:id" component={TeacherDetails} />
     </div>
   );
 }

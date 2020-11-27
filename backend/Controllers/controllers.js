@@ -73,8 +73,8 @@ const getTeachersRecords = async (req, res) => {
   const limit = Number.parseInt(req.query.limit);
   const search = req.query.name;
   const gender = req.query.filter;
-  const sort = req.query.sort === "asc" ? 1 : req.query.sort === "all" ? 0 : -1;
-  // console.log(req.params.id);
+  const sort =
+    req.query.sort === "asc" ? 1 : req.query.sort === "desc" ? -1 : 0;
 
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
@@ -88,7 +88,7 @@ const getTeachersRecords = async (req, res) => {
     searchParams["gender"] = gender;
   }
 
-  if (search !== "all") {
+  if (search != "all") {
     searchParams["name"] = search;
   }
 
@@ -97,7 +97,6 @@ const getTeachersRecords = async (req, res) => {
 
   let adminTeachers = await Teachers.countDocuments(searchParams);
 
-  // console.log("admin", adminTeachers);
   let results = {};
 
   results.totalCount = adminTeachers;
@@ -143,7 +142,7 @@ const postTeacherRecord = async (req, res) => {
     classes,
     adminId,
   });
-  // console.log("new Teacher", newTeacher);
+
   try {
     newTeacher
       .save()
@@ -159,11 +158,21 @@ const postTeacherRecord = async (req, res) => {
 
 const deleteTeacherRecord = (req, res) => {
   let id = req.params.id;
+  console.log(id);
   Teachers.findByIdAndDelete(id)
     .then((result) =>
       res
         .status(200)
         .json({ message: "Teacher Record deleted successfully", data: result })
+    )
+    .catch((err) => res.status(400).json({ error: err }));
+};
+
+const findTeacherRecord = (req, res) => {
+  let id = req.params.id;
+  Teachers.findById(id)
+    .then((result) =>
+      res.status(200).json({ message: "Teacher Record Found", data: result })
     )
     .catch((err) => res.status(400).json({ error: err }));
 };
@@ -174,6 +183,6 @@ module.exports = {
   loginUser,
   getTeachersRecords,
   postTeacherRecord,
-  //   updateTeacherRecord,
+  findTeacherRecord,
   deleteTeacherRecord,
 };
